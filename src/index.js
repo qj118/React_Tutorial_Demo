@@ -54,9 +54,11 @@ class Game extends React.Component {
                 squares: Array(9).fill(null),
                 column: null,
                 row: null,
+                active: false
             }], // history 是每一步后整个棋盘状态组成的数组
             xIsNext: true,
             stepNumber: 0,
+
         };
     }
 
@@ -72,23 +74,40 @@ class Game extends React.Component {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         const column = i % 3 === 0 ? 1 : i % 3 === 1 ? 2 : 3;
         const row = i < 3 ? 1 : i > 5 ? 3 : 2;
+        const active = false
         this.setState({
              history: history.concat([{
                  squares: squares,
-                 column: column,
-                 row: row
+                 column: column, // 每一步的位置
+                 row: row,
+                 active: active // 当前步是否处于激活状态（即当前按钮是否处于点击状态）
              }]), // 每下一步，对 history 追加一个状态数组
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
+
         });
 
     }
 
     jumpTo(step){
+        const history = this.state.history;
+        for(let i = 0; i < history.length;i++){
+            const current = history[i];
+            if(i === step){
+                current.active = true;
+            }else{
+                current.active = false;
+            }
+            history[i] = current;
+        }
+        const current = this.state.history[step];
+        current.active = true;
         this.setState({
+            history: history,
             stepNumber: step,
             xIsNext: (step % 2) === 0,
         });
+        // this.moveButton.classList.add("font-bold");
     }
 
     render() {
@@ -98,9 +117,10 @@ class Game extends React.Component {
 
         const moves = history.map((step,move) => { // map 映射，第一个参数是当前元素，第二个参数为当前元素的索引
            const desc = move ? 'Go to move #' + move + ", location(" + step.column + ", " + step.row + ")" : 'Go to game start';
+           const fontClass = step.active ? "font-bold" : "";
            return (
                <li key={move}>
-                   <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                   <button onClick={() => this.jumpTo(move)} className={`${fontClass}`}>{desc}</button>
                </li>
            );
         });
