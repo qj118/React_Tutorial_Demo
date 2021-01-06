@@ -52,6 +52,8 @@ class Game extends React.Component {
         this.state = {
             history: [{
                 squares: Array(9).fill(null),
+                column: null,
+                row: null,
             }], // history 是每一步后整个棋盘状态组成的数组
             xIsNext: true,
             stepNumber: 0,
@@ -60,17 +62,21 @@ class Game extends React.Component {
 
     handleClick(i)
     {
-        const history = this.state.history.slice(0, this.state.stepNumber + 1);
-        const current = history[history.length - 1];
+        const history = this.state.history.slice(0, this.state.stepNumber + 1); // 数组截取，前闭后开区间
+        const current = history[history.length - 1]; // 获取当前棋盘状态
         const squares = current.squares.slice();
-        if(calculatorWinner(squares) || squares[i])
+        if(calculatorWinner(squares) || squares[i]) // 第 i 个位置有值或者已经有人赢得了比赛
         {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
+        const column = i % 3 === 0 ? 1 : i % 3 === 1 ? 2 : 3;
+        const row = i < 3 ? 1 : i > 5 ? 3 : 2;
         this.setState({
              history: history.concat([{
-                 squares: squares
+                 squares: squares,
+                 column: column,
+                 row: row
              }]), // 每下一步，对 history 追加一个状态数组
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
@@ -87,11 +93,11 @@ class Game extends React.Component {
 
     render() {
         const history = this.state.history;
-        const current = history[this.state.stepNumber];
+        const current = history[this.state.stepNumber]; // 当前棋盘状态
         const winner = calculatorWinner(current.squares);
 
-        const moves = history.map((step,move) => {
-           const desc = move ? 'Go to move #' + move : 'Go to game start';
+        const moves = history.map((step,move) => { // map 映射，第一个参数是当前元素，第二个参数为当前元素的索引
+           const desc = move ? 'Go to move #' + move + ", location(" + step.column + ", " + step.row + ")" : 'Go to game start';
            return (
                <li key={move}>
                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
@@ -111,7 +117,7 @@ class Game extends React.Component {
                 <div className="game-board">
                     <Board
                         squares={current.squares}
-                        onClick={(i) => this.handleClick(i)} // 将 props传递给 Board
+                        onClick={(i) => this.handleClick(i)} // 将 props 传递给 Board，Board 再传递给 Square。
                     />
                 </div>
                 <div className="game-info">
