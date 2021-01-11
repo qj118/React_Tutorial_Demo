@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props){
-    const highlight = props.highlight ? "win-highlight":"";
+    const highlight = props.highlight ? "win-highlight" : "";
     return (
         <button className={`square ${highlight}`}
                 onClick={props.onClick} //通过 Board 获得该值
@@ -76,7 +76,11 @@ class Game extends React.Component {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         const column = i % 3 === 0 ? 1 : i % 3 === 1 ? 2 : 3;
         const row = i < 3 ? 1 : i > 5 ? 3 : 2;
-        const active = false
+        const active = false;
+        // 下新的一步时，将所有 moves 的激活状态置成 false
+        for(let i = 0; i < history.length; i ++){
+            history[i].active = false;
+        }
         this.setState({
              history: history.concat([{
                  squares: squares,
@@ -87,7 +91,6 @@ class Game extends React.Component {
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
         });
-
     }
 
     jumpTo(step){
@@ -101,8 +104,6 @@ class Game extends React.Component {
             }
             history[i] = current;
         }
-        const current = this.state.history[step];
-        current.active = true;
         this.setState({
             history: history,
             stepNumber: step,
