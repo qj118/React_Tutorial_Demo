@@ -52,3 +52,7 @@ ol, ul {
 .font-bold {
     font-weight: bold;
 }
+
+.win-highlight {
+    color: rebeccapurple;
+}

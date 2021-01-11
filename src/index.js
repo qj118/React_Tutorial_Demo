@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props){
+    const highlight = props.highlight ? "win-highlight":"";
     return (
-        <button className="square"
+        <button className={`square ${highlight}`}
                 onClick={props.onClick} //通过 Board 获得该值
         >
             {props.value}
@@ -19,6 +20,7 @@ class Board extends React.Component {
             <Square
                 value = {this.props.squares[i]}
                 onClick= {() => this.props.onClick(i)} // 通过 Game 获得该值，并将值传递给 Square
+                highlight = {this.props.highlight[i]}
             />
         );
     }
@@ -119,7 +121,8 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber]; // 当前棋盘状态
-        const winner = calculatorWinner(current.squares);
+        const winnerString = calculatorWinner(current.squares);
+        const highlight = Array(9).fill(false); // 存储当前棋盘上是否有棋子需要高亮，只有在出现胜者时才置成 true
 
         const moves = history.map((step,move) => { // map 映射，第一个参数是当前元素，第二个参数为当前元素的索引
            const desc = move ? 'Go to move #' + move + ", location(" + step.column + ", " + step.row + ")" : 'Go to game start';
@@ -132,9 +135,14 @@ class Game extends React.Component {
         });
 
         let status;
-        if(winner)
+        if(winnerString)
         {
+            const winArr = winnerString.split(",");
+            const winner = winArr[0];
             status = 'Winner: ' + winner;
+            for(let i = 1; i < 4; i++){
+                highlight[parseInt(winArr[i])] = true;
+            }
         }else{
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
@@ -144,6 +152,7 @@ class Game extends React.Component {
                     <Board
                         squares={current.squares}
                         onClick={(i) => this.handleClick(i)} // 将 props 传递给 Board，Board 再传递给 Square。
+                        highlight={highlight}
                     />
                 </div>
                 <div className="game-info">
@@ -174,7 +183,7 @@ function calculatorWinner(squares)
     {
         const [a, b, c] = lines[i];
         if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
-            return squares[a];
+            return squares[a] + "," + a + "," + b + "," + c; // 不仅仅返回胜者，还要返回获胜连线的坐标
         }
     }
     return null;
