@@ -123,6 +123,7 @@ class Game extends React.Component {
         const current = history[this.state.stepNumber]; // 当前棋盘状态
         const winnerString = calculatorWinner(current.squares);
         const highlight = Array(9).fill(false); // 存储当前棋盘上是否有棋子需要高亮，只有在出现胜者时才置成 true
+        const draw = calculatorDraw(current.squares);
 
         const moves = history.map((step,move) => { // map 映射，第一个参数是当前元素，第二个参数为当前元素的索引
            const desc = move ? 'Go to move #' + move + ", location(" + step.column + ", " + step.row + ")" : 'Go to game start';
@@ -143,6 +144,8 @@ class Game extends React.Component {
             for(let i = 1; i < 4; i++){
                 highlight[parseInt(winArr[i])] = true;
             }
+        }else if(draw){
+            status = "Draw";
         }else{
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
@@ -187,6 +190,15 @@ function calculatorWinner(squares)
         }
     }
     return null;
+}
+
+function calculatorDraw(squares){
+    for(let i = 0; i < 9; i++){
+        if(!squares[i]){
+            return false;
+        }
+    }
+    return true;
 }
 
 // ========================================
