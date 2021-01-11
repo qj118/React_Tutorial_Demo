@@ -54,5 +54,6 @@ ol, ul {
 }
 
 .win-highlight {
-    color: rebeccapurple;
+    color: white;
+    background-color: rebeccapurple;
 }

@@ -119,7 +119,7 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber]; // 当前棋盘状态
-        const winnerString = calculatorWinner(current.squares);
+        const winnerResult = calculatorWinner(current.squares);
         const highlight = Array(9).fill(false); // 存储当前棋盘上是否有棋子需要高亮，只有在出现胜者时才置成 true
         const draw = calculatorDraw(current.squares);
 
@@ -134,13 +134,13 @@ class Game extends React.Component {
         });
 
         let status;
-        if(winnerString)
+        if(winnerResult)
         {
-            const winArr = winnerString.split(",");
-            const winner = winArr[0];
+            const winner = winnerResult.winner;
+            const winArr = winnerResult.winArr;
             status = 'Winner: ' + winner;
-            for(let i = 1; i < 4; i++){
-                highlight[parseInt(winArr[i])] = true;
+            for(let i = 0; i < 3; i++){
+                highlight[winArr[i]] = true;
             }
         }else if(draw){
             status = "Draw";
@@ -184,7 +184,10 @@ function calculatorWinner(squares)
     {
         const [a, b, c] = lines[i];
         if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]){
-            return squares[a] + "," + a + "," + b + "," + c; // 不仅仅返回胜者，还要返回获胜连线的坐标
+            return {
+                winner: squares[a],
+                winArr: lines[i]
+            } // 不仅仅返回胜者，还要返回获胜连线的坐标
         }
     }
     return null;
