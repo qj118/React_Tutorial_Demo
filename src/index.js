@@ -58,7 +58,7 @@ class Game extends React.Component {
             }], // history 是每一步后整个棋盘状态组成的数组
             xIsNext: true,
             stepNumber: 0,
-
+            reversed: false,
         };
     }
 
@@ -84,7 +84,6 @@ class Game extends React.Component {
              }]), // 每下一步，对 history 追加一个状态数组
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
-
         });
 
     }
@@ -108,6 +107,13 @@ class Game extends React.Component {
             xIsNext: (step % 2) === 0,
         });
         // this.moveButton.classList.add("font-bold");
+    }
+
+    handleReverse = () => {
+        this.setState({
+            reversed: !this.state.reversed,
+        });
+        //console.log(this.state.reversed);
     }
 
     render() {
@@ -142,7 +148,10 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{moves}</ol>
+                    <button onClick={this.handleReverse}>Reverse Moves List</button>
+                    {/*<ol>{moves.reverse()}</ol>*/}
+                    {/* ol 上加 reverse 只是将序号反过来，这里不仅要将序号反过来，还要将整个 moves 数组反过来 */}
+                    {this.state.reversed ? <ol reversed>{moves.reverse()}</ol> :  <ol>{moves}</ol>}
                 </div>
             </div>
         );
